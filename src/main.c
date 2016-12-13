@@ -165,7 +165,7 @@ void benchmarkFunction(t_image_f imageIn, t_image imageOut, void (*functionPtr)(
 int main(int argc, char **argv)
 {
     if (argc != 3) {
-        printf("Usage: program_name <file_in> <file_out>\n");
+        printf("Usage: %s <file_in> <file_out>\n", argv[0]);
         exit(1);
     }
 
