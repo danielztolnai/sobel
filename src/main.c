@@ -11,9 +11,7 @@
 #define MEASURE_TIME
 #define RUNS 200
 
-static const float float3 = 3.0f;
 static const float float255 = 255.0f;
-static __m256 constfloat3;
 static __m256 constfloat255;
 static __m256 constfloat0;
 
@@ -171,7 +169,6 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    constfloat3   = _mm256_broadcast_ss(&float3);
     constfloat255 = _mm256_broadcast_ss(&float255);
     constfloat0   = _mm256_setzero_ps();
 
