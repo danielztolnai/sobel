@@ -158,8 +158,14 @@ void benchmarkFunction(t_image_f imageIn, t_image imageOut, void (*functionPtr)(
     }
 
     double end = omp_get_wtime();
-    float runTime = (float)(end - start) * 1000;
-    printf("%s:\t %8.3f ms (%8.3f fps)\n", getFunctionName(functionPtr), runTime, RUNS/runTime*1000);
+    float runTime = (float)(end - start); // Run time in seconds
+    float numberOfMegaPixels = (imageOut.width * imageOut.height) / (1000.0f * 1000.0f);
+    printf("%s:\t %8.3f MegaPixels/sec (%8.3f ms, %8.3f fps)\n",
+           getFunctionName(functionPtr),
+           numberOfMegaPixels*RUNS/runTime,
+           runTime*1000,
+           RUNS/runTime
+       );
 }
 
 int main(int argc, char **argv)
