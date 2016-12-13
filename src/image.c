@@ -1,6 +1,7 @@
 #include "image.h"
 #include <stdlib.h>
 #include <png.h>
+#include <omp.h>
 
 void mallocImage(t_image* image)
 {
@@ -11,6 +12,20 @@ void mallocImage(t_image* image)
 }
 
 void freeImage(t_image image)
+{
+    for (int y=0; y<image.height; y++) {
+        if(image.data[y] != NULL) {
+            free(image.data[y]);
+            image.data[y] = NULL;
+        }
+    }
+    if(image.data != NULL) {
+        free(image.data);
+        image.data = NULL;
+    }
+}
+
+void freeImageF(t_image_f image)
 {
     for (int y=0; y<image.height; y++) {
         if(image.data[y] != NULL) {
@@ -173,4 +188,32 @@ int writePngFile(char* fileName, t_image image)
 
     fclose(fp);
     return 0;
+}
+
+void rgb2gs(t_image rgbImage, t_image_f* gsImage)
+{
+    int x, y, xrgb, yrgb;
+    gsImage->width  = rgbImage.width  + 2;
+    gsImage->height = rgbImage.height + 2;
+    gsImage->data   = (float**) malloc(sizeof(float*) * gsImage->height);
+    #pragma omp parallel for private(x, xrgb, yrgb)
+    for (y=0; y<gsImage->height; ++y) {
+        gsImage->data[y] = (float*) malloc(sizeof(float)  * gsImage->width);
+        for (x=0; x<gsImage->width; ++x) {
+            xrgb = x;
+            if(x > 0)
+                --xrgb;
+            if(x > rgbImage.width)
+                --xrgb;
+            yrgb = y;
+            if(y > 0)
+                --yrgb;
+            if(y > rgbImage.height)
+                --yrgb;
+
+            gsImage->data[y][x] = (rgbImage.data[yrgb][xrgb].r +
+                                   rgbImage.data[yrgb][xrgb].g +
+                                   rgbImage.data[yrgb][xrgb].b  ) / 3.0f;
+        }
+    }
 }
